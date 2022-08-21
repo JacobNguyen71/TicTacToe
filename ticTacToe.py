@@ -66,6 +66,41 @@ def drawFigures():
             elif board[row][col] == 2:
                 pygame.draw.line(screen, CROSS_COLOR, (col * 200 + SPACE, row * 200 + 200 - SPACE), (col * 200 + 200 - SPACE, row * 200 + SPACE), CROSS_WIDTH)
                 pygame.draw.line(screen, CROSS_COLOR, (col * 200 + SPACE, row * 200 + SPACE), (col * 200 + 200 - SPACE, row * 200 + 200 - SPACE), CROSS_WIDTH)
+
+def check_win(player):
+    #vertical win check
+    for col in range(BOARD_COLS):
+        if board[0][col] == player and board[1][col] == player and board[2][col] == player:
+            draw_vertical_winning_line(col, player)
+            return True
+    
+    #horizontal win check
+    for row in range(BOARD_ROWS):
+        if board[row][0] == player and board[row][1] == player and board[row][2] == player:
+            draw_horizontal_winning_line(row, player)
+            return True
+
+    #asc diagonal win check
+    if board[2][0] == player and board[1][1] == player and board[0][2] == player:
+        draw_asc_diagonal(player)
+        return True
+
+    #dsc disgonal win check 
+    if board[0][2] == player and board[1][1] == player and board[2][0] == player:
+        draw_dsc_diagonal(player)
+        return True
+def draw_vertical_winning_line(col, player):
+    pass
+def draw_horizontal_winning_line(row, player):
+    pass
+def draw_asc_diagonal(player):
+    pass
+def draw_dsc_diagonal(player):
+    pass
+def restart():
+    pass
+
+
 drawLines()
 
 while True:
