@@ -5,15 +5,16 @@ import numpy as np
 pygame.init()
 
 #Sizes for objects
-WIDTH = 600
-HEIGHT = 600
+WIDTH = 800
+HEIGHT = 800
 LINE_WIDTH = 15
 BOARD_ROWS = 3
 BOARD_COLS = 3
-CIRCLE_RADIUS = 60
+SQUARE_SIZE = WIDTH //BOARD_COLS
+CIRCLE_RADIUS = SQUARE_SIZE//3
 CIRCLE_WIDTH = 15
 CROSS_WIDTH = 25
-SPACE = 55
+SPACE = SQUARE_SIZE//4
 
 #Colors
 RED = (255, 0, 0)
@@ -36,14 +37,14 @@ gameOver = False
 
 def drawLines():
     #First Horizontal
-    pygame.draw.line(screen, LINE_COLOR, (0, HEIGHT/3), (WIDTH, HEIGHT/3), LINE_WIDTH)
+    pygame.draw.line(screen, LINE_COLOR, (0, SQUARE_SIZE), (WIDTH, SQUARE_SIZE), LINE_WIDTH)
     #Second Horizontal
-    pygame.draw.line(screen, LINE_COLOR, (0, 2*HEIGHT/3), (WIDTH, 2*HEIGHT/3), LINE_WIDTH)
+    pygame.draw.line(screen, LINE_COLOR, (0, 2*SQUARE_SIZE), (WIDTH, 2*SQUARE_SIZE), LINE_WIDTH)
 
     #First Veritcal
-    pygame.draw.line(screen, LINE_COLOR, (WIDTH/3, 0), (WIDTH/3, HEIGHT), LINE_WIDTH)
+    pygame.draw.line(screen, LINE_COLOR, (SQUARE_SIZE, 0), (SQUARE_SIZE, HEIGHT), LINE_WIDTH)
     #Second Veritcal
-    pygame.draw.line(screen, LINE_COLOR, (2*WIDTH/3, 0), (2*WIDTH/3, HEIGHT), LINE_WIDTH)
+    pygame.draw.line(screen, LINE_COLOR, (2*SQUARE_SIZE, 0), (2*SQUARE_SIZE, HEIGHT), LINE_WIDTH)
 
 def markSquare(row, col, player):
     board[row][col] = player
@@ -62,10 +63,10 @@ def drawFigures():
     for row in range(BOARD_ROWS):
         for col in range(BOARD_COLS):
             if board[row][col]==1:
-                pygame.draw.circle(screen, CIRCLE_COLOR, (int(col * 200 + 100), int(row * 200 + 100)), CIRCLE_RADIUS, CIRCLE_WIDTH)
+                pygame.draw.circle(screen, CIRCLE_COLOR, (int(col * SQUARE_SIZE + SQUARE_SIZE//2), int(row * SQUARE_SIZE + SQUARE_SIZE//2)), CIRCLE_RADIUS, CIRCLE_WIDTH)
             elif board[row][col] == 2:
-                pygame.draw.line(screen, CROSS_COLOR, (col * 200 + SPACE, row * 200 + 200 - SPACE), (col * 200 + 200 - SPACE, row * 200 + SPACE), CROSS_WIDTH)
-                pygame.draw.line(screen, CROSS_COLOR, (col * 200 + SPACE, row * 200 + SPACE), (col * 200 + 200 - SPACE, row * 200 + 200 - SPACE), CROSS_WIDTH)
+                pygame.draw.line(screen, CROSS_COLOR, (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE), (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SPACE), CROSS_WIDTH)
+                pygame.draw.line(screen, CROSS_COLOR, (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SPACE), (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE), CROSS_WIDTH)
 
 def check_win(player):
     #vertical win check
@@ -91,10 +92,12 @@ def check_win(player):
         return True
 
 def draw_vertical_winning_line(col):
-    pygame.draw.line(screen, RED, ((col*200)+100, 0), ((col*200)+100, HEIGHT), 15)
+    posX = col * SQUARE_SIZE + SQUARE_SIZE//2
+    pygame.draw.line(screen, RED, (posX, 0), (posX, HEIGHT), 15)
 
 def draw_horizontal_winning_line(row):
-    pygame.draw.line(screen, RED, (row*200 + 100, 0), (row*200+100, WIDTH,), 15)
+    posY = row * SQUARE_SIZE + SQUARE_SIZE//2
+    pygame.draw.line(screen, RED, (0, posY), (WIDTH, posY), 15)
 
 def draw_asc_diagonal():
     pygame.draw.line(screen, RED, (15, HEIGHT-15), (WIDTH - 15, 15), 15)
@@ -122,23 +125,19 @@ while True:
             mouseX = event.pos[0]
             mouseY = event.pos[1]
 
-            clickedRow = int(mouseY // 200)
-            clickedCol = int(mouseX // 200)
+            clickedRow = int(mouseY // SQUARE_SIZE)
+            clickedCol = int(mouseX // SQUARE_SIZE)
 
             if avaliableSquare(clickedRow, clickedCol):
-                if player == 1:
-                    markSquare(clickedRow, clickedCol, player)
-                    if check_win(player):
-                        gameOver = True
-                    player = 2
-                elif player == 2:
-                    markSquare(clickedRow, clickedCol, player)
-                    if check_win(player):
-                        gameOver = True
-                    player = 1
+                markSquare(clickedRow, clickedCol, player)
+                if check_win(player):
+                    gameOver = True
+                player = player % 2 + 1
                 
                 drawFigures()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 restart()
+                gameOver = False
+                player = 1
     pygame.display.update()
